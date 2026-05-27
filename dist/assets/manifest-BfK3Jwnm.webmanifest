@@ -1,0 +1,15 @@
+{
+  "name": "Hailey's Grade 10 Tracker",
+  "short_name": "Hailey Tracker",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090c",
+  "theme_color": "#111319",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
