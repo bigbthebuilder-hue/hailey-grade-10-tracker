@@ -367,3 +367,403 @@ button { cursor: pointer; }
     font-size: 48px;
   }
 }
+
+/* Compact phone layout pass: less wasted space, wider notes */
+@media (max-width: 640px) {
+  :root {
+    font-size: 14px;
+  }
+
+  .app {
+    padding: 6px 6px 24px;
+  }
+
+  .hero,
+  .stickerBoard,
+  .coursePanel,
+  .toolsPanel {
+    border-radius: 18px;
+  }
+
+  .hero {
+    padding: 14px 14px 10px;
+    gap: 0;
+    background-size: 100% 100%, auto 68%;
+    background-position: left top, 94% 78%;
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(28px, 9vw, 38px);
+    line-height: .92;
+    letter-spacing: -.05em;
+  }
+
+  .eyebrow {
+    font-size: 9px;
+    letter-spacing: .2em;
+    margin-bottom: 6px;
+  }
+
+  .heroText {
+    margin-top: 8px;
+    max-width: 94%;
+    font-size: 12.5px;
+    line-height: 1.35;
+  }
+
+  .miniStats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-top: 10px;
+    max-width: 92%;
+  }
+
+  .miniStat {
+    min-height: 34px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    justify-content: flex-start;
+  }
+
+  .nextUpCard {
+    margin-top: 9px;
+    padding: 10px;
+    gap: 9px;
+    border-radius: 16px;
+    grid-template-columns: 48px 1fr;
+    max-width: 96%;
+  }
+
+  .nextUpBadge {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .nextUpCard strong {
+    font-size: 13px;
+  }
+
+  .nextUpCard p {
+    font-size: 12px;
+    line-height: 1.2;
+  }
+
+  .heroVisual {
+    min-height: 94px;
+    margin-top: -2px;
+  }
+
+  .heroProgressMount {
+    width: 108px;
+    height: 108px;
+    left: 61%;
+    top: 36%;
+  }
+
+  .heroProgressArc {
+    inset: 5px;
+  }
+
+  .heroPercent {
+    font-size: clamp(38px, 12vw, 50px);
+  }
+
+  .stickerBoard,
+  .coursePanel,
+  .toolsPanel {
+    margin-top: 8px;
+  }
+
+  .sectionHead {
+    padding: 12px 12px 0;
+  }
+
+  .sectionHead h2 {
+    font-size: 18px;
+  }
+
+  .counterPill {
+    min-width: 42px;
+    height: 28px;
+    font-size: 12px;
+    padding: 0 9px;
+  }
+
+  .stickerGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    padding: 10px 12px 8px;
+  }
+
+  .sticker {
+    min-height: 70px;
+    border-radius: 14px;
+    gap: 4px;
+    padding: 6px 4px;
+  }
+
+  .stickerEmoji {
+    font-size: 22px;
+  }
+
+  .sticker strong {
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .stickerInfo {
+    grid-template-columns: 38px 1fr auto;
+    margin: 0 12px 12px;
+    padding: 10px;
+    border-radius: 16px;
+    gap: 10px;
+  }
+
+  .stickerInfoEmoji {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    font-size: 22px;
+  }
+
+  .stickerInfo strong {
+    font-size: 14px;
+  }
+
+  .stickerInfo p {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .statusTag {
+    min-height: 26px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .courseStack {
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .courseButton {
+    grid-template-columns: 42px 1fr auto;
+    min-height: 86px;
+    padding: 12px 12px 22px;
+    gap: 10px;
+  }
+
+  .courseIcon,
+  .unitIcon {
+    width: 38px;
+    height: 38px;
+    border-radius: 13px;
+  }
+
+  .courseButtonMain strong {
+    font-size: 17px;
+  }
+
+  .courseButtonMain span,
+  .courseButtonMain em {
+    margin-top: 4px;
+    font-size: 11.5px;
+    line-height: 1.15;
+  }
+
+  .courseButtonRight {
+    grid-column: auto;
+    align-self: center;
+  }
+
+  .courseButtonRight b {
+    font-size: 24px;
+  }
+
+  .courseBar,
+  .unitBar {
+    left: 12px;
+    right: 12px;
+    bottom: 9px;
+    height: 7px;
+  }
+
+  .courseInside {
+    padding: 10px;
+  }
+
+  .courseNoteLine {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .teacherNotes {
+    padding: 10px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+  }
+
+  .teacherNotes span {
+    font-size: 13px;
+    margin-bottom: 7px;
+  }
+
+  .teacherNotes textarea {
+    min-height: 70px;
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .unitGrid {
+    gap: 8px;
+  }
+
+  .unitPanel {
+    border-radius: 16px;
+  }
+
+  .unitButton {
+    grid-template-columns: 38px 1fr auto;
+    min-height: 74px;
+    padding: 10px 10px 20px;
+    gap: 9px;
+  }
+
+  .unitButtonMain strong {
+    font-size: 14px;
+    line-height: 1.15;
+  }
+
+  .unitButtonMain span {
+    margin-top: 3px;
+    font-size: 11px;
+    line-height: 1.15;
+  }
+
+  .unitButtonRight {
+    grid-column: auto;
+  }
+
+  .unitButtonRight b {
+    font-size: 20px;
+  }
+
+  .unitInside {
+    padding: 6px;
+  }
+
+  .itemRow {
+    grid-template-columns: 34px 1fr;
+    gap: 8px;
+    padding: 9px;
+    border-radius: 14px;
+  }
+
+  .itemRow + .itemRow {
+    margin-top: 6px;
+  }
+
+  .checkButton {
+    width: 30px;
+    height: 30px;
+    border-radius: 10px;
+  }
+
+  .checkButton svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .itemMain strong {
+    font-size: 12.5px;
+    line-height: 1.15;
+  }
+
+  .itemMain small {
+    font-size: 10.5px;
+    margin-top: 2px;
+  }
+
+  .choiceBadge {
+    margin-top: 5px;
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .itemNote {
+    min-height: 42px;
+    width: 100%;
+    margin-top: 6px;
+    padding: 8px;
+    font-size: 12px;
+    border-radius: 12px;
+  }
+
+  .countsWrap {
+    grid-column: 1 / -1;
+    min-width: 0;
+    margin-left: 42px;
+  }
+
+  .countsToggle {
+    min-height: 30px;
+    padding: 0 8px;
+    font-size: 10.5px;
+  }
+
+  .countsToggle input {
+    width: 13px;
+    height: 13px;
+  }
+
+  .countsHelp {
+    font-size: 10px;
+    margin-top: 4px;
+  }
+
+  .ghostButton {
+    min-height: 36px;
+    margin-top: 7px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  .toolsPanel > summary {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .toolsInside {
+    padding: 0 12px 12px;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero {
+    background-size: 100% 100%, auto 64%;
+    background-position: left top, 96% 76%;
+  }
+
+  .heroVisual {
+    min-height: 86px;
+  }
+
+  .heroProgressMount {
+    width: 96px;
+    height: 96px;
+    left: 61%;
+    top: 34%;
+  }
+
+  .heroPercent {
+    font-size: 42px;
+  }
+
+  .stickerGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
