@@ -245,3 +245,125 @@ button { cursor: pointer; }
   .heroProgressMount { width: 188px; height: 188px; left: 61%; top: 55%; }
   .heroPercent { font-size: 62px; }
 }
+
+/* Mobile hero scale refinements */
+@media (max-width: 640px) {
+  .app {
+    padding: 8px 8px 30px;
+  }
+
+  .hero {
+    padding: 14px;
+    gap: 6px;
+    border-radius: 22px;
+    background-size: 100% 100%, auto 82%;
+    background-position: left top, 86% 84%;
+  }
+
+  .heroCopy h1 {
+    font-size: clamp(30px, 10vw, 42px);
+    line-height: .94;
+    letter-spacing: -.045em;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    letter-spacing: .18em;
+    margin-bottom: 8px;
+  }
+
+  .heroText {
+    margin-top: 10px;
+    font-size: 14px;
+    line-height: 1.38;
+    max-width: 88%;
+  }
+
+  .miniStats {
+    margin-top: 14px;
+    gap: 8px;
+  }
+
+  .miniStat {
+    min-height: 38px;
+    padding: 0 11px;
+    font-size: 13px;
+  }
+
+  .nextUpCard {
+    margin-top: 12px;
+    padding: 11px;
+    gap: 10px;
+    border-radius: 18px;
+  }
+
+  .nextUpBadge {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+  }
+
+  .nextUpCard strong {
+    font-size: 14px;
+  }
+
+  .nextUpCard p {
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .heroVisual {
+    min-height: 128px;
+    margin-top: -6px;
+  }
+
+  .heroProgressMount {
+    width: 132px;
+    height: 132px;
+    left: 64%;
+    top: 45%;
+    transform: translate(-50%, -50%) perspective(900px) rotateY(-15deg) scaleX(0.9);
+  }
+
+  .heroProgressArc {
+    inset: 6px;
+    -webkit-mask: radial-gradient(circle, transparent 74%, #000 76%);
+    mask: radial-gradient(circle, transparent 74%, #000 76%);
+  }
+
+  .heroPercent {
+    font-size: clamp(44px, 13vw, 58px);
+  }
+
+  .stickerBoard,
+  .coursePanel,
+  .toolsPanel {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero {
+    background-size: 100% 100%, auto 78%;
+    background-position: left top, 88% 86%;
+  }
+
+  .heroText {
+    max-width: 92%;
+  }
+
+  .heroVisual {
+    min-height: 116px;
+  }
+
+  .heroProgressMount {
+    width: 120px;
+    height: 120px;
+    left: 65%;
+    top: 45%;
+  }
+
+  .heroPercent {
+    font-size: 48px;
+  }
+}
