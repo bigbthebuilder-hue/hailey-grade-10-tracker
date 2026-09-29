@@ -111,7 +111,7 @@ button { cursor: pointer; }
   font-variant-numeric: tabular-nums;
 }
 
-.stickerBoard,.coursePanel,.toolsPanel { margin-top:16px; border-radius:28px; border:1px solid rgba(255,255,255,.08); background:rgba(16,19,26,.92); box-shadow:var(--card-shadow); overflow:hidden; }
+.stickerBoard,.coursePanel,.toolsPanel,.deviceTransfer { margin-top:16px; border-radius:28px; border:1px solid rgba(255,255,255,.08); background:rgba(16,19,26,.92); box-shadow:var(--card-shadow); overflow:hidden; }
 .sectionHead { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 18px 0; }
 .sectionHead h2 { margin:0; font-size:24px; }
 .sectionHead.compact h2 { font-size:22px; }
@@ -152,6 +152,10 @@ button { cursor: pointer; }
 .courseIcon-ss { background:linear-gradient(180deg, rgba(166,127,240,.24), rgba(166,127,240,.08)); color:#eadfff; }
 .courseIcon-math { background:linear-gradient(180deg, rgba(120,200,255,.24), rgba(120,200,255,.08)); color:#d9f4ff; }
 .courseIcon-science { background:linear-gradient(180deg, rgba(50,210,216,.24), rgba(50,210,216,.08)); color:#d5fdff; }
+.courseIcon-phe { background:linear-gradient(180deg, rgba(112,212,143,.24), rgba(112,212,143,.08)); color:#c9f8d5; }
+.courseIcon-fitness { background:linear-gradient(180deg, rgba(200,255,54,.24), rgba(200,255,54,.08)); color:#f3ffd0; }
+.courseIcon-photo { background:linear-gradient(180deg, rgba(166,127,240,.24), rgba(166,127,240,.08)); color:#eadfff; }
+.courseIcon-cle { background:linear-gradient(180deg, rgba(120,200,255,.24), rgba(120,200,255,.08)); color:#d9f4ff; }
 .unitIcon-purple { background:linear-gradient(180deg, rgba(166,127,240,.24), rgba(166,127,240,.08)); color:#eadfff; }
 .unitIcon-violet { background:linear-gradient(180deg, rgba(141,106,220,.24), rgba(141,106,220,.08)); color:#eadfff; }
 .unitIcon-teal { background:linear-gradient(180deg, rgba(50,210,216,.24), rgba(50,210,216,.08)); color:#d5fdff; }
@@ -176,6 +180,20 @@ button { cursor: pointer; }
 .teacherNotes textarea,.itemNote,.addForm input,.addForm select { width:100%; border:1px solid rgba(255,255,255,.08); border-radius:16px; background:rgba(8,10,15,.8); color:var(--text); outline:none; }
 .teacherNotes textarea,.itemNote { min-height:98px; resize:vertical; padding:12px; }
 .itemNote { min-height:56px; margin-top:8px; }
+.hoursPanel { margin-bottom:14px; padding:14px; border-radius:20px; background:linear-gradient(135deg, rgba(50,210,216,.09), rgba(200,255,54,.05)); border:1px solid rgba(50,210,216,.16); }
+.hoursHead { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.hoursHead strong,.hoursHead span { display:block; }
+.hoursHead span { margin-top:3px; color:var(--muted); font-size:13px; }
+.hoursHead b { font-size:24px; color:var(--teal); }
+.hoursBar { height:8px; margin:10px 0 12px; border-radius:999px; overflow:hidden; background:rgba(255,255,255,.08); }
+.hoursBar i { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg, var(--teal), var(--lime)); }
+.hourLogGrid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:8px; }
+.hourLog { display:grid; grid-template-columns:1fr 68px auto; gap:7px; align-items:center; min-height:54px; padding:8px 10px; border-radius:14px; background:rgba(8,10,15,.62); border:1px solid rgba(255,255,255,.07); }
+.hourLog.complete { border-color:rgba(112,212,143,.35); background:rgba(112,212,143,.09); }
+.hourLog span,.hourLog small { display:block; }
+.hourLog small { margin-top:2px; color:var(--muted); font-size:10px; }
+.hourLog input { width:68px; height:36px; border:1px solid rgba(255,255,255,.1); border-radius:10px; background:#090b10; color:var(--text); padding:0 8px; }
+.hourLog em { color:var(--muted); font-size:11px; font-style:normal; }
 .unitGrid { display:grid; gap:12px; }
 .unitPanel { border-radius:22px; overflow:hidden; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); }
 .unitButton { display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center; position:relative; min-height:96px; padding:16px 16px 26px; cursor:pointer; }
@@ -206,6 +224,12 @@ button { cursor: pointer; }
 .button input { display:none; }
 .toolsInside .danger { background:linear-gradient(135deg, #ff8c8c, #d85e74); color:#fff; }
 .toolsPanel > summary { padding:18px; cursor:pointer; font-weight:900; }
+.deviceTransfer { display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center; padding:18px; }
+.deviceTransfer h2 { margin:0; font-size:22px; }
+.deviceTransfer p:not(.eyebrow) { max-width:620px; margin:6px 0 0; color:var(--muted); line-height:1.45; }
+.deviceTransfer small { grid-column:1 / -1; color:#d9c891; }
+.transferButtons { display:flex; flex-wrap:wrap; gap:8px; }
+.transferButtons button,.transferButtons .button { min-height:44px; border:0; border-radius:14px; padding:0 14px; display:inline-flex; align-items:center; justify-content:center; gap:8px; color:#111319; background:linear-gradient(135deg, var(--lime), #d6ff63); font-weight:900; }
 .toolsInside { display:flex; flex-wrap:wrap; gap:10px; padding:0 18px 18px; border-top:1px solid rgba(255,255,255,.07); }
 .addForm { width:100%; display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:10px; margin-top:4px; }
 .addForm h2 { grid-column:1 / -1; margin:8px 0 0; display:flex; align-items:center; gap:8px; font-size:18px; }
@@ -219,7 +243,7 @@ button { cursor: pointer; }
 }
 @media (max-width: 640px) {
   .app { padding:10px 10px 36px; }
-  .hero,.stickerBoard,.coursePanel,.toolsPanel { border-radius:24px; }
+  .hero,.stickerBoard,.coursePanel,.toolsPanel,.deviceTransfer { border-radius:24px; }
   .hero { padding:16px; }
   .sectionHead { padding:16px 16px 0; }
   .stickerGrid { grid-template-columns:repeat(2, minmax(0, 1fr)); padding:16px; }
@@ -231,7 +255,9 @@ button { cursor: pointer; }
   .countsWrap { grid-column:2; min-width:0; }
   .countsHelp { text-align:left; }
   .miniStats { display:grid; grid-template-columns:1fr; }
-  .toolsInside button,.toolsInside .button,.addForm button { width:100%; }
+  .toolsInside button,.toolsInside .button,.addForm button,.transferButtons button,.transferButtons .button { width:100%; }
+  .deviceTransfer { grid-template-columns:1fr; }
+  .deviceTransfer small { grid-column:auto; }
 }
 
 @media (max-width: 860px) {
@@ -337,7 +363,8 @@ button { cursor: pointer; }
 
   .stickerBoard,
   .coursePanel,
-  .toolsPanel {
+  .toolsPanel,
+  .deviceTransfer {
     margin-top: 10px;
   }
 }
@@ -735,6 +762,16 @@ button { cursor: pointer; }
     padding: 12px;
     font-size: 13px;
   }
+
+  .deviceTransfer { padding:12px; gap:10px; }
+  .deviceTransfer h2 { font-size:18px; }
+  .deviceTransfer p:not(.eyebrow) { font-size:12px; line-height:1.35; }
+  .deviceTransfer small { font-size:10px; }
+
+  .hoursPanel { padding:10px; border-radius:16px; margin-bottom:10px; }
+  .hoursHead b { font-size:20px; }
+  .hourLogGrid { grid-template-columns:1fr; }
+  .hourLog { min-height:48px; }
 
   .toolsInside {
     padding: 0 12px 12px;

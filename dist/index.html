@@ -7,11 +7,16 @@
     <meta name="theme-color" content="#111319" />
     <link rel="icon" type="image/png" href="/favicon-32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/assets/manifest-Bliyfroz.webmanifest" />
-    <script type="module" crossorigin src="/assets/index-qoRvrTHW.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-C7JOBZea.css">
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <script type="module" crossorigin src="/assets/index-EeQcIBSB.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BbY_N-HP.css">
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
+      }
+    </script>
   </body>
 </html>

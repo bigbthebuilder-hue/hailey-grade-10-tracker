@@ -34,11 +34,15 @@ import {
   Triangle,
   BarChart3,
   PiggyBank,
+  HeartPulse,
+  Dumbbell,
+  Camera,
+  BriefcaseBusiness,
 } from 'lucide-react';
 import './style.css';
 import heroDrumBg from './hero-drum-bg.png';
 
-const STORAGE_KEY = 'wcln-course-tracker-v5';
+const STORAGE_KEY = 'wcln-course-tracker-v6';
 
 const seedCourses = [
   {
@@ -102,6 +106,49 @@ const seedCourses = [
       { id: 'science10-u3', name: 'Big Idea 3: Physics', items: [['Learning Guide',10,'Learning Guide'],['Unit 3 Quiz 1',7,'Quiz'],['Unit 3 Quiz 2',8,'Quiz'],['Unit 3 Quiz 3',8,'Quiz'],['Physics Project',12,'Project'],['Physics Test',30,'Test']]},
       { id: 'science10-u4', name: 'Big Idea 4: Earth Science', items: [['Learning Guide',10,'Learning Guide'],['Unit 4 Quiz 1',8,'Quiz'],['Unit 4 Quiz 2',8,'Quiz'],['Unit 4 Quiz 3',6,'Quiz'],['Earth Science Project',12,'Project'],['Earth Science Test',30,'Test']]}
     ]
+  },
+  {
+    id: 'phe10', name: 'Physical and Health Education 10 - WCLN',
+    note: 'Complete the course assignments and log 80 activity hours across at least 3 activity types. Unless medically accommodated, no more than 30 hours should come from one activity.',
+    hourTarget: 80,
+    hourLogs: Array.from({ length: 10 }, (_, i) => ({ id: `phe10-log-${i + 1}`, name: `Activity Log ${i + 1}`, target: 8 })),
+    units: [
+      { id: 'phe10-u1', name: 'Unit 1: Planning for Active Living', items: [['S.M.A.R.T. Goal Setting Quiz',0,'Quiz'],['Local Community Venues',0,'Assignment']] },
+      { id: 'phe10-u2', name: 'Unit 2: Active Living', items: [['Lifelong Activity',0,'Assignment'],['Benefits of Active Living',0,'Assignment']] },
+      { id: 'phe10-u3', name: 'Unit 3: Healthy Choices', items: [['Healthy Choices Course Work',0,'Assignment']] },
+      { id: 'phe10-u4', name: 'Unit 4: Personal Fitness', items: [['Personal Fitness Course Work',0,'Assignment']] },
+    ]
+  },
+  {
+    id: 'ftcd11', name: 'Fitness & Conditioning 11 - PIE',
+    note: 'Complete 100 activity hours in five 20-hour logs, along with four unit assignments and the final Fitness Plan project.',
+    hourTarget: 100,
+    hourLogs: Array.from({ length: 5 }, (_, i) => ({ id: `ftcd11-log-${i + 1}`, name: `Activity Log ${i + 1}`, target: 20 })),
+    units: [
+      { id: 'ftcd11-u1', name: 'Unit 1: Safety & Etiquette', items: [['Unit 1 Assignment: Safety & Etiquette',0,'Assignment']] },
+      { id: 'ftcd11-u2', name: 'Unit 2: Anatomy for Fitness', items: [['Unit 2 Assignment: Anatomy for Fitness',0,'Assignment']] },
+      { id: 'ftcd11-u3', name: 'Unit 3: Training Principles', items: [['Unit 3 Assignment: Training Principles',0,'Assignment']] },
+      { id: 'ftcd11-u4', name: 'Unit 4: Health Information', items: [['Unit 4 Assignment: Health Information',0,'Assignment']] },
+      { id: 'ftcd11-final', name: 'Final Project', items: [['Final Project: Fitness Plan',0,'Project']] },
+    ]
+  },
+  {
+    id: 'photo12', name: 'Digital Photography 12 - WCLN', note: 'A camera and photo editing software are required for this course.',
+    units: [
+      ['History of Photography','History of Photography'],
+      ['Camera Terminology','Camera Terminology'],
+      ['Composition & Lighting','Composition & Lighting'],
+      ['Learning from Experts','Learning from Experts'],
+      ['Photography Categories','Photography Categories'],
+    ].map(([name, label], i) => ({ id: `photo12-u${i + 1}`, name: `Unit ${i + 1}: ${name}`, items: [[`${label} Learning Guide`,0,'Learning Guide'],[`${label} Project`,0,'Project']] })).concat([
+      { id: 'photo12-u6', name: 'Unit 6: My Portfolio', items: [['Final Project: Portfolio Presentation',0,'Final Project']] }
+    ])
+  },
+  {
+    id: 'cle', name: 'Career-Life Education - PIE', note: 'Career-Life Education is tracked as one full-course unit.',
+    units: [
+      { id: 'cle-u1', name: 'Career-Life Education: Full Course', items: [['Choose an ePortfolio platform',0,'Course Work'],['Set up the ePortfolio',0,'Course Work'],['Complete Career-Life Education portfolio tasks',0,'Course Work']] }
+    ]
   }
 ];
 
@@ -110,6 +157,10 @@ const courseMeta = {
   ss10: { icon: Globe2, accent: 'ss' },
   wpmath10: { icon: Calculator, accent: 'math' },
   science10: { icon: FlaskConical, accent: 'science' },
+  phe10: { icon: HeartPulse, accent: 'phe' },
+  ftcd11: { icon: Dumbbell, accent: 'fitness' },
+  photo12: { icon: Camera, accent: 'photo' },
+  cle: { icon: BriefcaseBusiness, accent: 'cle' },
 };
 
 function getUnitMeta(unit) {
@@ -178,12 +229,29 @@ function blankState() {
     items: buildItems(),
     courseNotes: {},
     showCompleted: {},
+    activityHours: {},
+  };
+}
+
+function mergeWithCurrentOutline(saved) {
+  const fresh = blankState();
+  const savedById = new Map((saved.items || []).map(item => [item.id, item]));
+  const freshIds = new Set(fresh.items.map(item => item.id));
+  return {
+    ...fresh,
+    ...saved,
+    activityHours: saved.activityHours || {},
+    items: [
+      ...fresh.items.map(item => ({ ...item, ...(savedById.get(item.id) || {}), note: savedById.get(item.id)?.note || savedById.get(item.id)?.notes || '' })),
+      ...(saved.items || []).filter(item => !freshIds.has(item.id) && item.id?.startsWith('custom-')),
+    ],
   };
 }
 
 function loadState() {
   const keys = [
     STORAGE_KEY,
+    'wcln-course-tracker-v5',
     'wcln-course-tracker-v4',
     'wcln-course-tracker-v3',
     'wcln-course-tracker-v2',
@@ -194,14 +262,7 @@ function loadState() {
     try {
       const saved = JSON.parse(localStorage.getItem(key));
       if (saved?.items?.length) {
-        return {
-          ...blankState(),
-          ...saved,
-          items: saved.items.map(item => ({
-            ...item,
-            note: item.note || item.notes || '',
-          })),
-        };
+        return mergeWithCurrentOutline(saved);
       }
     } catch {}
   }
@@ -260,6 +321,18 @@ function progressFor(scopeItems, allItems) {
   const done = countedItems.filter(item => item.done).length;
   const pct = total ? Math.round((done / total) * 100) : 0;
   return { total, done, pct, countedItems };
+}
+
+function hoursFor(course, activityHours) {
+  if (!course.hourTarget) return null;
+  const logged = (course.hourLogs || []).reduce((sum, log) => sum + Math.max(0, Number(activityHours?.[log.id]) || 0), 0);
+  return { logged, target: course.hourTarget, pct: Math.min(100, Math.round((logged / course.hourTarget) * 100)) };
+}
+
+function courseProgressFor(course, items, activityHours) {
+  const assignments = progressFor(items, items);
+  const hours = hoursFor(course, activityHours);
+  return { ...assignments, hours, pct: hours ? Math.round((assignments.pct + hours.pct) / 2) : assignments.pct };
 }
 
 function buildCoursesWithItems(items) {
@@ -353,7 +426,7 @@ function CoursePanel({ course, state, save }) {
   const meta = courseMeta[course.id] || { icon: BookOpen, accent: 'efp' };
   const CourseIcon = meta.icon;
   const items = state.items.filter(item => item.courseId === course.id);
-  const progress = progressFor(items, state.items);
+  const progress = courseProgressFor(course, items, state.activityHours);
   const nextItem = getNextItem(items);
   const courseNote = state.courseNotes?.[course.id] || '';
 
@@ -375,7 +448,7 @@ function CoursePanel({ course, state, save }) {
         <div className={`courseIcon courseIcon-${meta.accent}`}><CourseIcon size={24} /></div>
         <div className="courseButtonMain">
           <strong>{cleanCourseName(course.name)}</strong>
-          <span>{progress.done} of {progress.total} counted items complete</span>
+          <span>{progress.done} of {progress.total} assignments complete{progress.hours ? ` • ${progress.hours.logged} / ${progress.hours.target} activity hours` : ''}</span>
           {nextItem ? <em>Next up: {nextItem.unitName} — {nextItem.title}</em> : <em>Everything currently counted here is complete.</em>}
         </div>
         <div className="courseButtonRight">
@@ -387,6 +460,8 @@ function CoursePanel({ course, state, save }) {
 
       <div className="courseInside">
         <p className="courseNoteLine">{course.note}</p>
+
+        {progress.hours && <ActivityHours course={course} state={state} save={save} progress={progress.hours} />}
 
         <label className="teacherNotes">
           <span><NotebookPen size={18} /> Questions / notes for teacher</span>
@@ -412,6 +487,39 @@ function CoursePanel({ course, state, save }) {
         </div>
       </div>
     </details>
+  );
+}
+
+function ActivityHours({ course, state, save, progress }) {
+  function updateHours(logId, value) {
+    const hours = value === '' ? '' : Math.max(0, Number(value));
+    save({ ...state, activityHours: { ...(state.activityHours || {}), [logId]: hours } });
+  }
+
+  return (
+    <section className="hoursPanel">
+      <div className="hoursHead">
+        <div>
+          <strong>Activity hours</strong>
+          <span>{progress.logged} of {progress.target} hours logged</span>
+        </div>
+        <b>{progress.pct}%</b>
+      </div>
+      <div className="hoursBar"><i style={{ width: `${progress.pct}%` }} /></div>
+      <div className="hourLogGrid">
+        {course.hourLogs.map(log => {
+          const value = state.activityHours?.[log.id] ?? '';
+          const complete = Number(value) >= log.target;
+          return (
+            <label className={`hourLog ${complete ? 'complete' : ''}`} key={log.id}>
+              <span>{log.name}<small>Target: {log.target} hours</small></span>
+              <input type="number" min="0" step="0.25" value={value} onChange={e => updateHours(log.id, e.target.value)} aria-label={`${log.name} hours`} placeholder="0" />
+              <em>hrs</em>
+            </label>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -503,6 +611,11 @@ export default function App() {
   const addCourse = seedCourses.find(course => course.id === addCourseId) || seedCourses[0];
   const courses = useMemo(() => buildCoursesWithItems(items), [items]);
   const stats = useMemo(() => progressFor(items, items), [items]);
+  const overallPct = useMemo(() => {
+    if (!courses.length) return 0;
+    return Math.round(courses.reduce((sum, course) => sum + courseProgressFor(course, course.items, state.activityHours).pct, 0) / courses.length);
+  }, [courses, state.activityHours]);
+  const totalActivityHours = useMemo(() => seedCourses.reduce((sum, course) => sum + (hoursFor(course, state.activityHours)?.logged || 0), 0), [state.activityHours]);
   const stickers = useMemo(() => buildStickers(courses, items, stats), [courses, items, stats]);
   const nextItem = useMemo(() => getNextItem(items), [items]);
 
@@ -526,7 +639,10 @@ export default function App() {
     reader.onload = () => {
       try {
         const data = JSON.parse(reader.result);
-        if (data.items) save({ ...blankState(), ...data });
+        if (data.items) {
+          save(mergeWithCurrentOutline(data));
+          alert('Progress imported successfully. This device now has the transferred tracker data.');
+        }
       } catch {
         alert('That file could not be imported.');
       }
@@ -578,7 +694,7 @@ export default function App() {
           <div className="miniStats">
             <div className="miniStat"><Sparkles size={16} /><span>{stats.done} counted items done</span></div>
             <div className="miniStat"><Trophy size={16} /><span>{courses.filter(course => progressFor(course.items, items).pct === 100 && progressFor(course.items, items).total > 0).length} courses cleared</span></div>
-            <div className="miniStat"><MessageSquare size={16} /><span>{Object.values(state.courseNotes || {}).filter(Boolean).length} course note areas started</span></div>
+            <div className="miniStat"><HeartPulse size={16} /><span>{totalActivityHours} activity hours logged</span></div>
           </div>
 
           {nextItem && (
@@ -592,7 +708,7 @@ export default function App() {
           )}
         </div>
 
-        <HeroProgressOverlay pct={stats.pct} />
+        <HeroProgressOverlay pct={overallPct} />
       </header>
 
       <StickerBoard stickers={stickers} activeStickerId={activeStickerId} setActiveStickerId={setActiveStickerId} />
@@ -601,8 +717,21 @@ export default function App() {
         {courses.map(course => <CoursePanel key={course.id} course={course} state={state} save={save} />)}
       </main>
 
+      <section className="deviceTransfer">
+        <div>
+          <p className="eyebrow minor">Use on another device</p>
+          <h2>Move tracker data</h2>
+          <p>Export a backup here, send the JSON file to the other phone or computer, then import it there. The file includes progress, notes, choices, custom items, and activity hours.</p>
+        </div>
+        <div className="transferButtons">
+          <button type="button" onClick={exportData}><Download size={18} /> Export tracker data</button>
+          <label className="button"><Upload size={18} /> Import tracker data<input type="file" accept="application/json" onChange={importData} /></label>
+        </div>
+        <small>Importing replaces this device's tracker data with the selected backup. Export this device first if it has progress you may want to keep.</small>
+      </section>
+
       <details className="toolsPanel">
-        <summary>Backup, reset, or add items later</summary>
+        <summary>More tools: backup, reset, or add items</summary>
         <div className="toolsInside">
           <button type="button" onClick={exportData}><Download size={18} /> Export backup</button>
           <label className="button"><Upload size={18} /> Import backup<input type="file" accept="application/json" onChange={importData} /></label>
