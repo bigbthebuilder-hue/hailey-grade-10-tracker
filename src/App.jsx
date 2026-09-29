@@ -41,6 +41,7 @@ import {
 } from 'lucide-react';
 import './style.css';
 import heroDrumBg from './hero-drum-bg.png';
+import { defaultSchedule, normalizeSchedule, dateKey, buildPacing } from './pacing.mjs';
 
 const STORAGE_KEY = 'wcln-course-tracker-v6';
 
@@ -230,6 +231,8 @@ function blankState() {
     courseNotes: {},
     showCompleted: {},
     activityHours: {},
+    schedule: { ...defaultSchedule },
+    activityHistory: [],
   };
 }
 
@@ -241,6 +244,8 @@ function mergeWithCurrentOutline(saved) {
     ...fresh,
     ...saved,
     activityHours: saved.activityHours || {},
+    schedule: normalizeSchedule(saved.schedule),
+    activityHistory: Array.isArray(saved.activityHistory) ? saved.activityHistory : [],
     items: [
       ...fresh.items.map(item => ({ ...item, ...(savedById.get(item.id) || {}), note: savedById.get(item.id)?.note || savedById.get(item.id)?.notes || '' })),
       ...(saved.items || []).filter(item => !freshIds.has(item.id) && item.id?.startsWith('custom-')),
@@ -439,7 +444,7 @@ function CoursePanel({ course, state, save }) {
   }
 
   function toggleDone(item) {
-    updateItem(item.id, { done: !item.done });
+    updateItem(item.id, { done: !item.done, completedDate: item.done ? '' : dateKey() });
   }
 
   return (
@@ -493,7 +498,9 @@ function CoursePanel({ course, state, save }) {
 function ActivityHours({ course, state, save, progress }) {
   function updateHours(logId, value) {
     const hours = value === '' ? '' : Math.max(0, Number(value));
-    save({ ...state, activityHours: { ...(state.activityHours || {}), [logId]: hours } });
+    const delta = Number(hours) - (Number(state.activityHours?.[logId]) || 0);
+    save({ ...state, activityHours: { ...(state.activityHours || {}), [logId]: hours },
+      activityHistory: [...(state.activityHistory || []), { logId, courseId: course.id, date: dateKey(), delta }] });
   }
 
   return (
@@ -599,6 +606,71 @@ function ItemRow({ item, allItems, updateItem, toggleDone }) {
         {countsLocked && <small className="countsHelp">Handled automatically</small>}
       </div>
     </div>
+  );
+}
+
+function PacingCards({ state, save }) {
+  const [, refreshDate] = useState(dateKey());
+  React.useEffect(() => {
+    const timer = setInterval(() => refreshDate(dateKey()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+  const pacing = buildPacing(state, seedCourses, getChoiceRule);
+  const { schedule } = pacing;
+  const [draft, setDraft] = useState(schedule);
+  React.useEffect(() => { setDraft(normalizeSchedule(state.schedule)); }, [state.schedule]);
+  const invalid = !draft.schoolYearStart || !draft.schoolYearEnd || draft.schoolYearStart > draft.schoolYearEnd;
+  const hoursText = value => `${Number(value.toFixed(2))} h`;
+  const finished = !pacing.remaining && !pacing.remainingHours;
+  const overdue = pacing.today > schedule.schoolYearEnd;
+  function applySchedule(event) {
+    event.preventDefault();
+    if (!invalid) save({ ...state, schedule: normalizeSchedule(draft) });
+  }
+  return (
+    <section className="pacing" aria-label="Daily and weekly pacing">
+      <div className="pacingGrid">
+        <article className="pacingCard">
+          <div className="pacingHead"><h2>Today’s Track</h2><span className="pacingStatus">{pacing.status}</span></div>
+          <p className="pacingTarget">{finished ? 'All required work complete!' : `${pacing.dailyGoal} checklist items suggested today`}</p>
+          {pacing.isWorkday && pacing.hours.filter(course => course.remaining > 0).map(course => {
+            const loggedToday = Math.max(0, (state.activityHistory || []).filter(event => event.courseId === course.id && event.date === pacing.today).reduce((sum, event) => sum + event.delta, 0));
+            const dailyHours = Math.min(course.remaining, Math.max(0, (course.remaining + loggedToday) / Math.max(1, pacing.remainingDays) * pacing.factor - loggedToday));
+            return <p className="pacingActivity" key={course.id}><HeartPulse size={15} />{Math.ceil(dailyHours * 60)} min {course.id === 'phe10' ? 'PHE' : 'Fitness'} activity</p>;
+          })}
+          {!pacing.isWorkday && !finished && <p className="pacingHint">{overdue ? 'Your end date has passed. Update your schedule to plan the remaining work.' : pacing.today < schedule.schoolYearStart ? `Your plan starts ${schedule.schoolYearStart}. Preview your next items below.` : 'Rest day. These next items are ready whenever you are.'}</p>}
+          {pacing.suggestions.length > 0 && <><p className="pacingLabel">Next picks · choose from these</p><ol className="pacingPicks">{pacing.suggestions.map(item => <li key={item.id}><strong>{item.title}</strong><span>{cleanCourseName(item.courseName)} · {item.unitName}{getChoiceRule(item) ? ' · choice option' : ''}</span></li>)}</ol></>}
+          {!pacing.remaining && pacing.remainingHours > 0 && <p className="pacingHint">Checklist cleared. Keep going with your activity logs.</p>}
+        </article>
+        <article className="pacingCard">
+          <div className="pacingHead"><h2>This Week</h2><span className="pacingLabel">Mon–Sun</span></div>
+          <dl className="pacingMetrics">
+            <div><dt>Checklist goal</dt><dd>{pacing.weekGoal} items</dd></div>
+            <div><dt>Completed this week</dt><dd>{pacing.weekDone} items</dd></div>
+            <div><dt>Activity goal · PHE + Fitness</dt><dd>{hoursText(pacing.weekHourGoal)}</dd></div>
+            <div><dt>Hours recorded this week</dt><dd>{hoursText(pacing.weekHours)}</dd></div>
+          </dl>
+          <p className="pacingTarget">Remaining this week: {pacing.weekRemaining} items + {hoursText(pacing.weekHoursRemaining)}</p>
+          <p className="pacingHint">{finished ? 'Everything is wrapped up. Enjoy the extra time.' : overdue ? `${pacing.remaining} items + ${hoursText(pacing.remainingHours)} still need a new schedule.` : pacing.status === 'Catch-up needed' || pacing.status === 'Slightly behind' ? 'Catch-up pace: spread the remaining work across your planned days. Start with one next pick.' : pacing.status === 'Ahead' || (!pacing.weekRemaining && !pacing.weekHoursRemaining) ? 'Room for a lighter day. Keep a little momentum or take a breather.' : 'A steady beat: small sessions across the week keep the work manageable.'}</p>
+          <p className="pacingHint">{pacing.remainingDays} planned workdays left. Activity time is separate from checklist work.</p>
+          <p className="pacingFootnote">{pacing.undated ? 'Older checklist completions have no date and are excluded from this week. ' : ''}Hours show net changes recorded this week; older hour totals have no dates. Weekly targets adjust with your progress.</p>
+        </article>
+      </div>
+      <details className="pacingCard scheduleCard">
+        <summary>Schedule Settings <span>{schedule.workDaysPerWeek} days/week · {schedule.dailyWorkloadStyle}</span></summary>
+        <form onSubmit={applySchedule}>
+          <div className="scheduleFields">
+            <label>School year start<input type="date" required value={draft.schoolYearStart} onChange={e => setDraft({ ...draft, schoolYearStart: e.target.value })} /></label>
+            <label>School year end<input type="date" required min={draft.schoolYearStart} value={draft.schoolYearEnd} onChange={e => setDraft({ ...draft, schoolYearEnd: e.target.value })} /></label>
+            <label>Workdays per week<select value={draft.workDaysPerWeek} onChange={e => setDraft({ ...draft, workDaysPerWeek: Number(e.target.value) })}>{[1, 2, 3, 4, 5, 6, 7].map(days => <option key={days} value={days}>{days}</option>)}</select></label>
+            <label>Daily workload<select value={draft.dailyWorkloadStyle} onChange={e => setDraft({ ...draft, dailyWorkloadStyle: e.target.value })}>{['Light', 'Balanced', 'Push'].map(style => <option key={style}>{style}</option>)}</select></label>
+          </div>
+          <p className="pacingFootnote">Workdays run from Monday onward (5 = Mon–Fri). Holidays aren’t excluded. Light aims for 75% of today’s pace; Push aims for 125%. The weekly goal stays tied to your end date.</p>
+          {invalid && <p role="alert">Choose valid dates with the end on or after the start.</p>}
+          <button className="button" type="submit" disabled={invalid}>Save schedule</button>
+        </form>
+      </details>
+    </section>
   );
 }
 
@@ -710,6 +782,8 @@ export default function App() {
 
         <HeroProgressOverlay pct={overallPct} />
       </header>
+
+      <PacingCards state={state} save={save} />
 
       <StickerBoard stickers={stickers} activeStickerId={activeStickerId} setActiveStickerId={setActiveStickerId} />
 
